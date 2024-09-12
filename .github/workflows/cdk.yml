@@ -11,7 +11,7 @@ on:
 env:
   env_name: |-
     ${{
-          github.ref_name == 'release' && 'production'
+         github.ref_name == 'release' && 'production'
       || github.ref_name == 'staging' && 'staging'
       ||                                 'development'
     }}
@@ -19,13 +19,7 @@ env:
 jobs:
   aws_cdk:
     runs-on: ubuntu-latest
-    environment: env_name
-    # environment: |-
-    #   ${{
-    #      github.ref_name == 'release' && 'production'
-    #   || github.ref_name == 'staging' && 'staging'
-    #   ||                                 'development'
-    #   }}
+    environment: ${{ env.env_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
