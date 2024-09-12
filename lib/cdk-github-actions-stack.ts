@@ -17,13 +17,18 @@ export class CdkGithubActionsStack extends cdk.Stack {
     //   visibilityTimeout: cdk.Duration.seconds(300)
     // });
 
+    const lambdaEnvTest: string = this.node.tryGetContext('lambdaEnvTest')!;
+
     // defines an AWS Lambda resource
     const hello = new lambda.Function(this, 'HelloHandler', {
       // runtime: lambda.Runtime.NODEJS_10_X,      // execution environment
       runtime: lambda.Runtime.NODEJS_18_X,      // execution environment
       // code: lambda.Code.asset('src/'),  // code loaded from the "lambda" directory
       code: lambda.Code.fromAsset('src/'), // code loaded from "lambda" directory
-      handler: 'lambda/hello.handler'                // file is "hello", function is "handler"
+      handler: 'lambda/hello.handler',                // file is "hello", function is "handler"
+      environment: {
+        TEST: lambdaEnvTest
+      }
     });
 
     // defines an API Gateway REST API resource backed by our "hello" function.
