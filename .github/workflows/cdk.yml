@@ -8,15 +8,24 @@ on:
       - master
   pull_request:
 
+env:
+  env_name: |-
+    ${{
+          github.ref_name == 'release' && 'production'
+      || github.ref_name == 'staging' && 'staging'
+      ||                                 'development'
+    }}
+
 jobs:
   aws_cdk:
     runs-on: ubuntu-latest
-    environment: |-
-      ${{
-         github.ref_name == 'release' && 'production'
-      || github.ref_name == 'staging' && 'staging'
-      ||                                 'development'
-      }}
+    environment: env_name
+    # environment: |-
+    #   ${{
+    #      github.ref_name == 'release' && 'production'
+    #   || github.ref_name == 'staging' && 'staging'
+    #   ||                                 'development'
+    #   }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,6 +37,10 @@ jobs:
 
       - name: Setup dependencies
         run: npm ci
+
+      - name: Config
+        run: |
+          cp ./env/cdk_${{ env.env_name }}.json ./cdk.json
 
       - name: Build
         run: npm run build
